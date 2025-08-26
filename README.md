@@ -1,4 +1,4 @@
-# ENGG680_2024_fall
+# ENGG680_2025_fall
 This repository contains materials and assignments for the ENGG680 course in the Fall 2024 semester.
 
 ## Table of Contents
