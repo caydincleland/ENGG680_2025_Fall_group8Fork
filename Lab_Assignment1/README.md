@@ -1,2 +1,5 @@
-This folder is for the contents of assignment 1 for group 8 in ENGG680
-Team members include Caydin, Chetan, Ramtin and Sep.
+Upload your updated README.md file within the Lab_Assignment1 folder to include the
+name and UCID of each group member, as well as a short excerpt on what Assignment 1 is about.
+
+Caydin Cleland:30162848
+
