@@ -8,8 +8,8 @@ symptoms_df = pd.read_csv("symptoms_df.csv")
 h.load_medications("medications.csv")
 h.load_clinic_inventory("clinic_inventory_modified.csv")
 
-# Train model
-disease_model, disease_encoder, accuracy = h.train_disease_model(symptoms_df)
+# Train model (returns 5 values now)
+disease_model, disease_encoder, accuracy, X_test, y_test = h.train_disease_model(symptoms_df)
 print(f"Model accuracy: {accuracy:.4f}")
 
 # Example user input
