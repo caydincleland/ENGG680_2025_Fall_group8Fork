@@ -8,16 +8,17 @@ symptoms_df = pd.read_csv("symptoms_df.csv")
 h.load_medications("medications.csv")
 h.load_clinic_inventory("clinic_inventory_modified.csv")
 
-# Train model (returns 5 values now)
-disease_model, disease_encoder, accuracy, X_test, y_test = h.train_disease_model(symptoms_df)
-print(f"Model accuracy: {accuracy:.4f}")
+# Train model (returns 8 values now)
+disease_model, disease_encoder, train_accuracy, test_accuracy, X_train, y_train, X_test, y_test = h.train_disease_model(symptoms_df)
+print(f"Model training accuracy: {train_accuracy:.4f}")
+print(f"Model testing accuracy: {test_accuracy:.4f}")
 
 # Example user input
 user_input = {
-    "Symptom_1": "back pain",
-    "Symptom_2": "dizziness",
-    "Symptom_3": "fatigue",
-    "Symptom_4": "neck pain"
+    "Symptom_1": "patches in throat",
+    "Symptom_2": "extra marital contacts",
+    "Symptom_3": "high fever",
+    "Symptom_4": "muscle wasting"
 }
 
 # Predict probable diseases

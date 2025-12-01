@@ -84,10 +84,13 @@ class helper:
         
         model.fit(X_train, y_train)
 
-        y_pred = model.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred)
+        # Calculate training and testing accuracy
+        y_train_pred = model.predict(X_train)
+        y_test_pred = model.predict(X_test)
+        train_accuracy = accuracy_score(y_train, y_train_pred)
+        test_accuracy = accuracy_score(y_test, y_test_pred)
 
-        return model, disease_encoder, accuracy, X_test, y_test
+        return model, disease_encoder, train_accuracy, test_accuracy, X_train, y_train, X_test, y_test
 
     def predict_disease_probabilities(self, user_symptoms, model, disease_encoder, top_n=3, threshold=0.45):
         """Predict top probable diseases and return probabilities and medications."""
