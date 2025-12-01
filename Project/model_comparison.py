@@ -21,8 +21,9 @@ print("=" * 80)
 print("\n" + "=" * 80)
 print("RANDOM FOREST MODEL")
 print("=" * 80)
-rf_model, rf_encoder, rf_accuracy, rf_X_test, rf_y_test = h.train_disease_model(symptoms_df, model_type='random_forest')
-print(f"\nRandom Forest Accuracy: {rf_accuracy:.4f} ({rf_accuracy*100:.2f}%)")
+rf_model, rf_encoder, rf_train_acc, rf_test_acc, rf_X_train, rf_y_train, rf_X_test, rf_y_test = h.train_disease_model(symptoms_df, model_type='random_forest')
+print(f"\nRandom Forest Training Accuracy: {rf_train_acc:.4f} ({rf_train_acc*100:.2f}%)")
+print(f"Random Forest Testing Accuracy: {rf_test_acc:.4f} ({rf_test_acc*100:.2f}%)")
 
 rf_y_pred = rf_model.predict(rf_X_test)
 rf_precision = precision_score(rf_y_test, rf_y_pred, average='weighted', zero_division=0)
@@ -40,8 +41,9 @@ print(classification_report(rf_y_test, rf_y_pred, target_names=rf_encoder.classe
 print("\n" + "=" * 80)
 print("NAIVE BAYES MODEL")
 print("=" * 80)
-nb_model, nb_encoder, nb_accuracy, nb_X_test, nb_y_test = h.train_disease_model(symptoms_df, model_type='naive_bayes')
-print(f"\nNaive Bayes Accuracy: {nb_accuracy:.4f} ({nb_accuracy*100:.2f}%)")
+nb_model, nb_encoder, nb_train_acc, nb_test_acc, nb_X_train, nb_y_train, nb_X_test, nb_y_test = h.train_disease_model(symptoms_df, model_type='naive_bayes')
+print(f"\nNaive Bayes Training Accuracy: {nb_train_acc:.4f} ({nb_train_acc*100:.2f}%)")
+print(f"Naive Bayes Testing Accuracy: {nb_test_acc:.4f} ({nb_test_acc*100:.2f}%)")
 
 nb_y_pred = nb_model.predict(nb_X_test)
 nb_precision = precision_score(nb_y_test, nb_y_pred, average='weighted', zero_division=0)
@@ -58,7 +60,8 @@ print(classification_report(nb_y_test, nb_y_pred, target_names=nb_encoder.classe
 # Store metrics in a DataFrame
 metrics_data = {
     'Model': ['Random Forest', 'Naive Bayes'],
-    'Accuracy': [rf_accuracy, nb_accuracy],
+    'Training Accuracy': [rf_train_acc, nb_train_acc],
+    'Testing Accuracy': [rf_test_acc, nb_test_acc],
     'Precision': [rf_precision, nb_precision],
     'Recall': [rf_recall, nb_recall],
     'F1-Score': [rf_f1, nb_f1]
@@ -75,12 +78,12 @@ print("SUMMARY COMPARISON")
 print("=" * 80)
 print("\n" + metrics_df.to_string(index=False))
 
-print(f"\nAccuracy Difference: {abs(rf_accuracy - nb_accuracy):.4f} ({abs(rf_accuracy - nb_accuracy)*100:.2f}%)")
+print(f"\nTesting Accuracy Difference: {abs(rf_test_acc - nb_test_acc):.4f} ({abs(rf_test_acc - nb_test_acc)*100:.2f}%)")
 
-if rf_accuracy > nb_accuracy:
-    print(f"✓ Random Forest performs better by {(rf_accuracy - nb_accuracy)*100:.2f}%")
-elif nb_accuracy > rf_accuracy:
-    print(f"✓ Naive Bayes performs better by {(nb_accuracy - rf_accuracy)*100:.2f}%")
+if rf_test_acc > nb_test_acc:
+    print(f"✓ Random Forest performs better by {(rf_test_acc - nb_test_acc)*100:.2f}%")
+elif nb_test_acc > rf_test_acc:
+    print(f"✓ Naive Bayes performs better by {(nb_test_acc - rf_test_acc)*100:.2f}%")
 else:
     print("✓ Both models perform equally well")
 
