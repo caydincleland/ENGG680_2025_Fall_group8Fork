@@ -1,5 +1,8 @@
 .DS_Store
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ebc31277f70d79ccc1faf4bdfcc1fd9ccb975139
 assignment2/Assignment 2 Data/part1_data/~$satellite_position.xlsx
 assignment2/Assignment 2 Data/part1_data/pseudoranges.csv
 assignment2/Assignment 2 Data/part1_data/pseudoranges.xlsx
@@ -9,5 +12,8 @@ assignment2/Assignment 2 Data/part3-data/mnist_test.csv
 assignment2/Assignment 2 Data/part3-data/mnist_train.csv
 .gitignore
 Lab_Assignment1/Assignment1.ipynb
+<<<<<<< HEAD
 =======
 >>>>>>> projectbranch
+=======
+>>>>>>> ebc31277f70d79ccc1faf4bdfcc1fd9ccb975139
