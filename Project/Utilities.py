@@ -5,8 +5,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import ast
-import heapq
-import math
 import requests
 
 class helper:
