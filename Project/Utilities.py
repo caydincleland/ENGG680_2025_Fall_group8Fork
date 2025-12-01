@@ -2,7 +2,8 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import ast
 import heapq
 import math
@@ -28,8 +29,21 @@ class helper:
         return value
 
     # ----------------------- Disease Model -----------------------
-    def train_disease_model(self, df):
-        """Train a multi-hot RandomForest model for disease prediction."""
+    def train_disease_model(self, df, model_type='random_forest'):
+        """Train a multi-hot model for disease prediction.
+        
+        Parameters
+        ----------
+        df : DataFrame
+            The symptoms dataframe
+        model_type : str
+            Either 'random_forest' or 'naive_bayes'
+        
+        Returns
+        -------
+        tuple
+            (model, disease_encoder, accuracy, X_test, y_test)
+        """
         self.symptoms_df = df.copy()
         self.symptoms_df.fillna("none", inplace=True)
 
@@ -62,13 +76,20 @@ class helper:
             X, y, test_size=0.2, random_state=42
         )
 
-        model = RandomForestClassifier(n_estimators=300, random_state=42)
+        # Train the selected model
+        if model_type == 'random_forest':
+            model = RandomForestClassifier(n_estimators=300, random_state=42)
+        elif model_type == 'naive_bayes':
+            model = MultinomialNB()
+        else:
+            raise ValueError(f"Unknown model_type: {model_type}. Use 'random_forest' or 'naive_bayes'")
+        
         model.fit(X_train, y_train)
 
         y_pred = model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
 
-        return model, disease_encoder, accuracy
+        return model, disease_encoder, accuracy, X_test, y_test
 
     def predict_disease_probabilities(self, user_symptoms, model, disease_encoder, top_n=3, threshold=0.45):
         """Predict top probable diseases and return probabilities and medications."""
