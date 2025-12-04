@@ -2,7 +2,6 @@ import pandas as pd
 from Utilities import helper
 # Initialize helper
 h = helper()
-
 # Load datasets
 symptoms_df = pd.read_csv("symptoms_df.csv")
 h.load_medications("medications.csv")
