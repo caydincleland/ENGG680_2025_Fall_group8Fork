@@ -15,10 +15,10 @@ print(f"Model testing accuracy: {test_accuracy:.4f}")
 
 # Example user input
 user_input = {
-    "Symptom_1": "patches in throat",
-    "Symptom_2": "extra marital contacts",
-    "Symptom_3": "high fever",
-    "Symptom_4": "muscle wasting"
+    "Symptom_1": "back pain",
+    "Symptom_2": "dizziness",
+    "Symptom_3": "fatigue",
+    "Symptom_4": "neck pain"
 }
 
 # Predict probable diseases

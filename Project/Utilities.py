@@ -28,69 +28,87 @@ class helper:
 
     # ----------------------- Disease Model -----------------------
     def train_disease_model(self, df, model_type='random_forest'):
-        """Train a multi-hot model for disease prediction.
-        
-        Parameters
-        ----------
-        df : DataFrame
-            The symptoms dataframe
-        model_type : str
-            Either 'random_forest' or 'naive_bayes'
-        
-        Returns
-        -------
-        tuple
-            (model, disease_encoder, accuracy, X_test, y_test)
         """
+        Train model on BOTH dataset formats:
+           A) Symptom_1, Symptom_2, Symptom_3 → string symptoms
+           B) wide binary dataset → symptoms are already 0/1
+
+        Auto-detects format and trains accordingly.
+        """
+
         self.symptoms_df = df.copy()
-        self.symptoms_df.fillna("none", inplace=True)
+        df = df.copy()
 
-        # Clean all symptoms
-        symptom_cols = [col for col in df.columns if "Symptom" in col]
-        for col in symptom_cols:
-            self.symptoms_df[col] = self.symptoms_df[col].astype(str).apply(self.clean_symptom)
+        # Detect column types
+        symptom_cols_string = [c for c in df.columns if "symptom" in c.lower()]
+        disease_col = [c for c in df.columns if c.lower() in ("disease", "diseases")][0]
 
-        # Create list of all unique symptoms
-        all_symptoms_series = pd.Series(dtype=str)
-        for col in symptom_cols:
-            all_symptoms_series = pd.concat([all_symptoms_series, self.symptoms_df[col].astype(str)])
-        self.all_symptoms = sorted(all_symptoms_series.unique())
-        if "none" in self.all_symptoms:
-            self.all_symptoms.remove("none")
+        # ------------------------------------------------------------------
+        # CASE A: STRING SYMPTOM COLUMNS like Symptom_1, Symptom_2, ...
+        # ------------------------------------------------------------------
+        if len(symptom_cols_string) > 0:
+            df.fillna("none", inplace=True)
 
-        # Multi-hot encode symptoms
-        X = pd.DataFrame(0, index=self.symptoms_df.index, columns=self.all_symptoms)
-        for col in symptom_cols:
-            for i, val in enumerate(self.symptoms_df[col]):
-                if val != "none":
-                    X.at[i, val] = 1
+            # Clean text symptoms
+            for col in symptom_cols_string:
+                df[col] = df[col].astype(str).apply(self.clean_symptom)
 
+            # Collect unique symptoms
+            all_symptoms = set()
+            for col in symptom_cols_string:
+                all_symptoms.update(df[col].tolist())
+            all_symptoms = sorted([s for s in all_symptoms if s != "none"])
+            self.all_symptoms = all_symptoms
+
+            # Multi-hot encode
+            X = pd.DataFrame(0, index=df.index, columns=self.all_symptoms)
+            for col in symptom_cols_string:
+                for idx, val in enumerate(df[col]):
+                    if val in X.columns:
+                        X.at[idx, val] = 1
+
+        # ------------------------------------------------------------------
+        # CASE B: WIDE BINARY SYMPTOM DATASET (500+ symptoms as 0/1 columns)
+        # ------------------------------------------------------------------
+        else:
+            # Disease column + binary symptom columns
+            symptom_cols_binary = [c for c in df.columns if c != disease_col]
+
+            # Clean symptom names for consistency
+            df.columns = [self.clean_symptom(c) for c in df.columns]
+
+            disease_col = self.clean_symptom(disease_col)
+            symptom_cols_binary = [c for c in df.columns if c != disease_col]
+
+            self.all_symptoms = symptom_cols_binary
+            X = df[symptom_cols_binary].astype(int)
+
+        # ------------------------------------------------------------------
         # Encode diseases
+        # ------------------------------------------------------------------
         disease_encoder = LabelEncoder()
-        y = disease_encoder.fit_transform(self.symptoms_df["Disease"])
+        y = disease_encoder.fit_transform(df[disease_col])
 
         # Train-test split
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, random_state=42
         )
 
-        # Train the selected model
+        # Model selection
         if model_type == 'random_forest':
             model = RandomForestClassifier(n_estimators=300, random_state=42)
         elif model_type == 'naive_bayes':
             model = MultinomialNB()
         else:
-            raise ValueError(f"Unknown model_type: {model_type}. Use 'random_forest' or 'naive_bayes'")
-        
+            raise ValueError("Unknown model")
+
         model.fit(X_train, y_train)
 
-        # Calculate training and testing accuracy
-        y_train_pred = model.predict(X_train)
-        y_test_pred = model.predict(X_test)
-        train_accuracy = accuracy_score(y_train, y_train_pred)
-        test_accuracy = accuracy_score(y_test, y_test_pred)
+        # Accuracy
+        train_acc = accuracy_score(y_train, model.predict(X_train))
+        test_acc = accuracy_score(y_test, model.predict(X_test))
 
-        return model, disease_encoder, train_accuracy, test_accuracy, X_train, y_train, X_test, y_test
+        return model, disease_encoder, train_acc, test_acc, X_train, y_train, X_test, y_test
 
     def predict_disease_probabilities(self, user_symptoms, model, disease_encoder, top_n=3, threshold=0.45):
         """Predict top probable diseases and return probabilities and medications."""
