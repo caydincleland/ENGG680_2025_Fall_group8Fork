@@ -1,0 +1,31 @@
+This is the output we get on terminal for running main.py
+C:\Users\cheth\AppData\Local\Programs\Python\Python313\python.exe D:\ENGO680-GIT\ENGG680_2025_Fall_group8Fork\Project\main.py
+Model training accuracy: 0.9952
+Model testing accuracy: 0.9949
+
+Disease: Cervical spondylosis (Probability: 0.813)
+Common Symptoms: back_pain, dizziness, loss_of_balance, neck_pain, weakness_in_limbs
+Matched Symptoms: back_pain, dizziness, neck_pain
+Unmatched Symptoms: fatigue
+Suggested Medications: Pain relievers, Muscle relaxants, Neck braces, Corticosteroids
+
+Clinics for Cervical spondylosis:
+ - Banff Trail Medical (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
+ - Kensington Medical Clinic (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
+ - University Health Centre (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
+ - Varsity Family Clinic (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
+ - Crowfoot Village Family Practice (Available: pain_relievers, neck_braces, corticosteroids)
+ - Foothills Medical Clinic (Available: pain_relievers, muscle_relaxants, corticosteroids)
+ - Market Mall Medical Centre (Available: muscle_relaxants, neck_braces, corticosteroids)
+ - Montgomery Medical Clinic (Available: pain_relievers, neck_braces, corticosteroids)
+ - North Hill Medical Centre (Available: pain_relievers, neck_braces, corticosteroids)
+ - Riley Park Health Centre (Available: pain_relievers, neck_braces, corticosteroids)
+ - Brentwood Medical Centre (Available: muscle_relaxants, corticosteroids)
+ - Dalhousie Station Medical Clinic (Available: muscle_relaxants, corticosteroids)
+Top 3 nearest clinics:
+ - Kensington Medical Clinic (Distance: 2.511 km)
+ - North Hill Medical Centre (Distance: 5.398 km)
+ - Banff Trail Medical (Distance: 7.091 km)
+
+Process finished with exit code 0
+
