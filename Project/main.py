@@ -10,8 +10,9 @@ h.load_medications("medications.csv")
 h.load_clinic_inventory("clinic_inventory_modified.csv")
 
 # Train model
-disease_model, disease_encoder, accuracy = h.train_disease_model(symptoms_df)
-print(f"Model accuracy: {accuracy:.4f}")
+disease_model, disease_encoder, train_accuracy, test_accuracy, X_train, y_train, X_test, y_test = h.train_disease_model(symptoms_df)
+print(f"Model training accuracy: {train_accuracy:.4f}")
+print(f"Model testing accuracy: {test_accuracy:.4f}")
 
 # Example user input
 user_input = {
