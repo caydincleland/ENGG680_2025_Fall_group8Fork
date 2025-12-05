@@ -29,13 +29,13 @@ else:
 
 # Example user input
 user_input = {
-    "Symptom_1": "anxiety and nervousness",
-    "Symptom_2": "shortness of breath",
-    "Symptom_3": "depressive or psychotic symptoms",
-    "Symptom_4": "depression",
-    "Symptom_5": "insomnia",
-    "Symptom_6": "irregular heartbeat",
-    "Symptom_7": "chest tightness",
+    "Symptom_1": "abnormal appearing skin",
+    "Symptom_2": "acne or pimples",
+    "Symptom_3": "skin lesion",
+    "Symptom_4": "skin swelling",
+    "Symptom_5": "skin rash",
+    "Symptom_6": "itching of skin",
+    "Symptom_7": "itchy scalp",
     
     
     
