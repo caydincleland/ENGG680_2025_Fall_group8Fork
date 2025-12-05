@@ -1,6 +1,5 @@
-This README is a general overview of our group 8 final project in ENGG 680. Group members are 
-# Disease Prediction System
-
+This README is a general overview of our group 8 final project in ENGG 680. Group members are: Caydin Cleland:30162848, Chethan Karthikeya Sundharesh: 30273252 Sepehr Akhiani: 30265830 Ramtin Chelongarian: 30263429
+#System
 A machine learning-based disease prediction system that uses patient symptoms to predict potential diseases and recommend nearby clinics with appropriate medications.
 
 ## Overview
