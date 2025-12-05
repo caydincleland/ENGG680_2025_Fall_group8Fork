@@ -15,6 +15,7 @@ This project implements and compares two machine learning models (Random Forest 
 - Multi-hot encoded symptom representation
 
 *Note: Download the dataset separately and place it in the Project folder before running the code.*
+Link to  data set: https://data.mendeley.com/datasets/2cxccsxydc/1
 
 ## Model Performance
 
