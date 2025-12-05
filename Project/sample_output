@@ -1,5 +1,11 @@
 Example user symptoms:
-
+    "Symptom_1": "abnormal appearing skin",
+    "Symptom_2": "acne or pimples",
+    "Symptom_3": "skin lesion",
+    "Symptom_4": "skin swelling",
+    "Symptom_5": "skin rash",
+    "Symptom_6": "itching of skin",
+    "Symptom_7": "itchy scalp"
 
 Output from model:
 Disease: fungal infection of the skin (Probability: 0.8)
