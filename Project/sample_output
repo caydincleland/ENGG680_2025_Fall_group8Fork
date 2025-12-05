@@ -1,31 +1,36 @@
-This is the output we get on terminal for running main.py
-C:\Users\cheth\AppData\Local\Programs\Python\Python313\python.exe D:\ENGO680-GIT\ENGG680_2025_Fall_group8Fork\Project\main.py
-Model training accuracy: 0.9952
-Model testing accuracy: 0.9949
+Example user symptoms:
 
-Disease: Cervical spondylosis (Probability: 0.813)
-Common Symptoms: back_pain, dizziness, loss_of_balance, neck_pain, weakness_in_limbs
-Matched Symptoms: back_pain, dizziness, neck_pain
-Unmatched Symptoms: fatigue
-Suggested Medications: Pain relievers, Muscle relaxants, Neck braces, Corticosteroids
 
-Clinics for Cervical spondylosis:
- - Banff Trail Medical (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
- - Kensington Medical Clinic (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
- - University Health Centre (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
- - Varsity Family Clinic (Available: pain_relievers, muscle_relaxants, neck_braces, corticosteroids)
- - Crowfoot Village Family Practice (Available: pain_relievers, neck_braces, corticosteroids)
- - Foothills Medical Clinic (Available: pain_relievers, muscle_relaxants, corticosteroids)
- - Market Mall Medical Centre (Available: muscle_relaxants, neck_braces, corticosteroids)
- - Montgomery Medical Clinic (Available: pain_relievers, neck_braces, corticosteroids)
- - North Hill Medical Centre (Available: pain_relievers, neck_braces, corticosteroids)
- - Riley Park Health Centre (Available: pain_relievers, neck_braces, corticosteroids)
- - Brentwood Medical Centre (Available: muscle_relaxants, corticosteroids)
- - Dalhousie Station Medical Clinic (Available: muscle_relaxants, corticosteroids)
+Output from model:
+Disease: fungal infection of the skin (Probability: 0.8)
+Common Symptoms: acne_or_pimples, irregular_appearing_scalp, itching_of_skin, itchy_scalp, skin_rash, too_little_hair
+Matched Symptoms: acne_or_pimples, skin_rash, itching_of_skin, itchy_scalp
+Unmatched Symptoms: abnormal_appearing_skin, skin_lesion, skin_swelling
+Suggested Medications: Antifungal Cream, Fluconazole, Terbinafine, Clotrimazole, Ketoconazole
+
+Disease: fungal infection of the hair (Probability: 0.16)
+Common Symptoms: abnormal_appearing_skin, irregular_appearing_scalp, pelvic_pain, skin_growth, skin_lesion, skin_swelling
+Matched Symptoms: abnormal_appearing_skin, skin_lesion, skin_swelling
+Unmatched Symptoms: acne_or_pimples, skin_rash, itching_of_skin, itchy_scalp
+Suggested Medications: None, consult doctor
+
+Clinics for fungal infection of the skin:
+ - Crowfoot Village Family Practice (Available: antifungal_cream, fluconazole, terbinafine, clotrimazole, ketoconazole)
+ - Foothills Medical Clinic (Available: antifungal_cream, fluconazole, terbinafine, clotrimazole, ketoconazole)
+ - Market Mall Medical Centre (Available: antifungal_cream, fluconazole, terbinafine, clotrimazole, ketoconazole)
+ - Montgomery Medical Clinic (Available: antifungal_cream, fluconazole, terbinafine, clotrimazole, ketoconazole)
+ - Brentwood Medical Centre (Available: antifungal_cream, terbinafine, clotrimazole, ketoconazole)     
+ - Dalhousie Station Medical Clinic (Available: antifungal_cream, terbinafine, clotrimazole, ketoconazole)
+ - University Health Centre (Available: antifungal_cream, fluconazole, terbinafine, ketoconazole)      
+ - Varsity Family Clinic (Available: fluconazole, terbinafine, clotrimazole, ketoconazole)
+ - Kensington Medical Clinic (Available: terbinafine, clotrimazole, ketoconazole)
+ - North Hill Medical Centre (Available: antifungal_cream, fluconazole, ketoconazole)
+ - Riley Park Health Centre (Available: terbinafine, clotrimazole)
+ - Banff Trail Medical (Available: clotrimazole)
+
+Clinics for fungal infection of the skin:
 Top 3 nearest clinics:
  - Kensington Medical Clinic (Distance: 2.511 km)
  - North Hill Medical Centre (Distance: 5.398 km)
  - Banff Trail Medical (Distance: 7.091 km)
-
-Process finished with exit code 0
 
