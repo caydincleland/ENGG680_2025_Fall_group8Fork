@@ -1,27 +1,48 @@
 import pandas as pd
+import os
 from Utilities import helper
+
+# Change to script directory to ensure relative paths work
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 # Initialize helper
 h = helper()
 # Load datasets
-symptoms_df = pd.read_csv("symptoms_df.csv")
 h.load_medications("medications.csv")
 h.load_clinic_inventory("clinic_inventory_modified.csv")
 
-# Train model (returns 8 values now)
-disease_model, disease_encoder, train_accuracy, test_accuracy, X_train, y_train, X_test, y_test = h.train_disease_model(symptoms_df)
-print(f"Model training accuracy: {train_accuracy:.4f}")
-print(f"Model testing accuracy: {test_accuracy:.4f}")
+# Load pre-trained model (or train if model doesn't exist)
+model_file = "trained_model.joblib"
+
+if os.path.exists(model_file):
+    print("Loading pre-trained model...")
+    disease_model, disease_encoder = h.load_model(model_file)
+else:
+    print("No saved model found. Training new model...")
+    symptoms_df = pd.read_csv("Disease and symptoms dataset.csv")
+    disease_model, disease_encoder, train_accuracy, test_accuracy, X_train, y_train, X_test, y_test = h.train_disease_model(symptoms_df)
+    print(f"Model training accuracy: {train_accuracy:.4f}")
+    print(f"Model testing accuracy: {test_accuracy:.4f}")
+    
+    # Save the trained model
+    h.save_model(disease_model, disease_encoder, model_file)
 
 # Example user input
 user_input = {
-    "Symptom_1": "back pain",
-    "Symptom_2": "dizziness",
-    "Symptom_3": "fatigue",
-    "Symptom_4": "neck pain"
+    "Symptom_1": "anxiety and nervousness",
+    "Symptom_2": "shortness of breath",
+    "Symptom_3": "depressive or psychotic symptoms",
+    "Symptom_4": "depression",
+    "Symptom_5": "insomnia",
+    "Symptom_6": "irregular heartbeat",
+    "Symptom_7": "chest tightness",
+    
+    
+    
 }
 
-# Predict probable diseases
-results = h.predict_disease_probabilities(user_input, disease_model, disease_encoder, top_n=3)
+# Predict probable diseases (lowered threshold to 0.1 to see more results)
+results = h.predict_disease_probabilities(user_input, disease_model, disease_encoder, top_n=3, threshold=0.1)
 
 # Print disease predictions and medications
 for r in results:

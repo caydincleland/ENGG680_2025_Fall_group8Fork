@@ -1,0 +1,13 @@
+Metric,Random Forest,Naive Bayes
+Test Accuracy,0.8371,0.8389
+Precision (Macro),0.8236,0.7379
+Precision (Weighted),0.8394,0.8482
+Recall (Macro),0.8342,0.6453
+Recall (Weighted),0.8371,0.8389
+F1-Score (Macro),0.8222,0.6732
+F1-Score (Weighted),0.8371,0.8341
+ROC-AUC (Macro),nan,nan
+ROC-AUC (Weighted),0.9789,0.9997
+Top-1 Accuracy,0.8371,0.8389
+Top-3 Accuracy,0.9383,0.9442
+Top-5 Accuracy,0.9538,0.9683

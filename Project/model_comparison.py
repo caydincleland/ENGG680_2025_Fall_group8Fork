@@ -1,15 +1,17 @@
 import pandas as pd
 from Utilities import helper
-from sklearn.metrics import classification_report, confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.metrics import classification_report, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.preprocessing import label_binarize
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import time
 
 # Initialize helper
 h = helper()
 
 # Load datasets
-symptoms_df = pd.read_csv("symptoms_df.csv")
+symptoms_df = pd.read_csv("Disease and symptoms dataset.csv")
 h.load_medications("medications.csv")
 h.load_clinic_inventory("clinic_inventory_modified.csv")
 
@@ -26,16 +28,26 @@ print(f"\nRandom Forest Training Accuracy: {rf_train_acc:.4f} ({rf_train_acc*100
 print(f"Random Forest Testing Accuracy: {rf_test_acc:.4f} ({rf_test_acc*100:.2f}%)")
 
 rf_y_pred = rf_model.predict(rf_X_test)
+rf_y_pred_proba = rf_model.predict_proba(rf_X_test)
 rf_precision = precision_score(rf_y_test, rf_y_pred, average='weighted', zero_division=0)
 rf_recall = recall_score(rf_y_test, rf_y_pred, average='weighted', zero_division=0)
 rf_f1 = f1_score(rf_y_test, rf_y_pred, average='weighted', zero_division=0)
 
+# Calculate ROC-AUC (multi-class: ovr = one-vs-rest)
+# Use labels parameter to ensure consistency
+rf_classes = list(range(len(rf_encoder.classes_)))
+rf_roc_auc = roc_auc_score(rf_y_test, rf_y_pred_proba, multi_class='ovr', average='weighted', labels=rf_classes)
+
 print(f"Precision: {rf_precision:.4f} ({rf_precision*100:.2f}%)")
 print(f"Recall: {rf_recall:.4f} ({rf_recall*100:.2f}%)")
 print(f"F1-Score: {rf_f1:.4f} ({rf_f1*100:.2f}%)")
+print(f"ROC-AUC Score: {rf_roc_auc:.4f} ({rf_roc_auc*100:.2f}%)")
 
 print("\nClassification Report:")
-print(classification_report(rf_y_test, rf_y_pred, target_names=rf_encoder.classes_, zero_division=0))
+# Get unique classes in test set for proper reporting
+unique_test_classes = sorted(set(rf_y_test))
+test_class_names = rf_encoder.inverse_transform(unique_test_classes)
+print(classification_report(rf_y_test, rf_y_pred, labels=unique_test_classes, target_names=test_class_names, zero_division=0))
 
 # Train Naive Bayes model
 print("\n" + "=" * 80)
@@ -46,16 +58,26 @@ print(f"\nNaive Bayes Training Accuracy: {nb_train_acc:.4f} ({nb_train_acc*100:.
 print(f"Naive Bayes Testing Accuracy: {nb_test_acc:.4f} ({nb_test_acc*100:.2f}%)")
 
 nb_y_pred = nb_model.predict(nb_X_test)
+nb_y_pred_proba = nb_model.predict_proba(nb_X_test)
 nb_precision = precision_score(nb_y_test, nb_y_pred, average='weighted', zero_division=0)
 nb_recall = recall_score(nb_y_test, nb_y_pred, average='weighted', zero_division=0)
 nb_f1 = f1_score(nb_y_test, nb_y_pred, average='weighted', zero_division=0)
 
+# Calculate ROC-AUC (multi-class: ovr = one-vs-rest)
+# Use labels parameter to ensure consistency
+nb_classes = list(range(len(nb_encoder.classes_)))
+nb_roc_auc = roc_auc_score(nb_y_test, nb_y_pred_proba, multi_class='ovr', average='weighted', labels=nb_classes)
+
 print(f"Precision: {nb_precision:.4f} ({nb_precision*100:.2f}%)")
 print(f"Recall: {nb_recall:.4f} ({nb_recall*100:.2f}%)")
 print(f"F1-Score: {nb_f1:.4f} ({nb_f1*100:.2f}%)")
+print(f"ROC-AUC Score: {nb_roc_auc:.4f} ({nb_roc_auc*100:.2f}%)")
 
 print("\nClassification Report:")
-print(classification_report(nb_y_test, nb_y_pred, target_names=nb_encoder.classes_, zero_division=0))
+# Get unique classes in test set for proper reporting
+unique_test_classes_nb = sorted(set(nb_y_test))
+test_class_names_nb = nb_encoder.inverse_transform(unique_test_classes_nb)
+print(classification_report(nb_y_test, nb_y_pred, labels=unique_test_classes_nb, target_names=test_class_names_nb, zero_division=0))
 
 # Store metrics in a DataFrame
 metrics_data = {
@@ -64,7 +86,8 @@ metrics_data = {
     'Testing Accuracy': [rf_test_acc, nb_test_acc],
     'Precision': [rf_precision, nb_precision],
     'Recall': [rf_recall, nb_recall],
-    'F1-Score': [rf_f1, nb_f1]
+    'F1-Score': [rf_f1, nb_f1],
+    'ROC-AUC': [rf_roc_auc, nb_roc_auc]
 }
 metrics_df = pd.DataFrame(metrics_data)
 
@@ -96,24 +119,34 @@ user_input = {
     "Symptom_1": "back pain",
     "Symptom_2": "dizziness",
     "Symptom_3": "fatigue",
-    "Symptom_4": "neck pain"
+    "Symptom_4": "neck pain",
+    "Symptom_5": "nausea",
+    "Symptom_6": "headache",
+    "Symptom_7": "blurred vision",
+    "Symptom_8": "vomiting"
 }
 
 print(f"\nUser Symptoms: {', '.join(user_input.values())}")
 
 print("\n--- Random Forest Predictions ---")
-rf_results = h.predict_disease_probabilities(user_input, rf_model, rf_encoder, top_n=3)
-for i, r in enumerate(rf_results, 1):
-    print(f"\n{i}. Disease: {r['disease']} (Probability: {r['probability']:.3f})")
-    print(f"   Matched Symptoms: {', '.join(r['matched_symptoms']) if r['matched_symptoms'] else 'None'}")
-    print(f"   Medications: {', '.join(r['medications'][:3]) if r['medications'] else 'None'}")
+rf_results = h.predict_disease_probabilities(user_input, rf_model, rf_encoder, top_n=3, threshold=0.0)
+if rf_results:
+    for i, r in enumerate(rf_results, 1):
+        print(f"\n{i}. Disease: {r['disease']} (Probability: {r['probability']:.3f})")
+        print(f"   Matched Symptoms: {', '.join(r['matched_symptoms']) if r['matched_symptoms'] else 'None'}")
+        print(f"   Medications: {', '.join(r['medications'][:3]) if r['medications'] else 'None'}")
+else:
+    print("No predictions generated")
 
 print("\n--- Naive Bayes Predictions ---")
-nb_results = h.predict_disease_probabilities(user_input, nb_model, nb_encoder, top_n=3)
-for i, r in enumerate(nb_results, 1):
-    print(f"\n{i}. Disease: {r['disease']} (Probability: {r['probability']:.3f})")
-    print(f"   Matched Symptoms: {', '.join(r['matched_symptoms']) if r['matched_symptoms'] else 'None'}")
-    print(f"   Medications: {', '.join(r['medications'][:3]) if r['medications'] else 'None'}")
+nb_results = h.predict_disease_probabilities(user_input, nb_model, nb_encoder, top_n=3, threshold=0.0)
+if nb_results:
+    for i, r in enumerate(nb_results, 1):
+        print(f"\n{i}. Disease: {r['disease']} (Probability: {r['probability']:.3f})")
+        print(f"   Matched Symptoms: {', '.join(r['matched_symptoms']) if r['matched_symptoms'] else 'None'}")
+        print(f"   Medications: {', '.join(r['medications'][:3]) if r['medications'] else 'None'}")
+else:
+    print("No predictions generated")
 
 # Create visualizations
 print("\n" + "=" * 80)
@@ -134,7 +167,7 @@ ax.set_title('Model Performance Comparison', fontsize=14, fontweight='bold')
 ax.set_xticks(x)
 ax.set_xticklabels(metrics_df.columns[1:])
 ax.legend()
-ax.set_ylim([0.98, 1.0])
+ax.set_ylim([0, 1.0])
 ax.grid(axis='y', alpha=0.3)
 
 # Add value labels on bars
@@ -150,70 +183,42 @@ plt.savefig('model_metrics_comparison.png', dpi=300, bbox_inches='tight')
 print("✓ Saved: model_metrics_comparison.png")
 plt.close()
 
-# 2. Confusion Matrix for Random Forest
-rf_cm = confusion_matrix(rf_y_test, rf_y_pred)
-plt.figure(figsize=(16, 14))
-sns.heatmap(rf_cm, annot=True, fmt='d', cmap='Blues', 
-            xticklabels=rf_encoder.classes_, 
-            yticklabels=rf_encoder.classes_,
-            cbar_kws={'label': 'Count'})
-plt.title('Random Forest - Confusion Matrix', fontsize=16, fontweight='bold', pad=20)
-plt.xlabel('Predicted Label', fontsize=12, fontweight='bold')
-plt.ylabel('True Label', fontsize=12, fontweight='bold')
-plt.xticks(rotation=90, ha='right', fontsize=8)
-plt.yticks(rotation=0, fontsize=8)
-plt.tight_layout()
-plt.savefig('confusion_matrix_random_forest.png', dpi=300, bbox_inches='tight')
-print("✓ Saved: confusion_matrix_random_forest.png")
-plt.close()
+# 2. ROC Curve Comparison with Micro-Average
+from sklearn.metrics import roc_curve, auc
+from sklearn.preprocessing import label_binarize
 
-# 3. Confusion Matrix for Naive Bayes
-nb_cm = confusion_matrix(nb_y_test, nb_y_pred)
-plt.figure(figsize=(16, 14))
-sns.heatmap(nb_cm, annot=True, fmt='d', cmap='Greens',
-            xticklabels=nb_encoder.classes_,
-            yticklabels=nb_encoder.classes_,
-            cbar_kws={'label': 'Count'})
-plt.title('Naive Bayes - Confusion Matrix', fontsize=16, fontweight='bold', pad=20)
-plt.xlabel('Predicted Label', fontsize=12, fontweight='bold')
-plt.ylabel('True Label', fontsize=12, fontweight='bold')
-plt.xticks(rotation=90, ha='right', fontsize=8)
-plt.yticks(rotation=0, fontsize=8)
-plt.tight_layout()
-plt.savefig('confusion_matrix_naive_bayes.png', dpi=300, bbox_inches='tight')
-print("✓ Saved: confusion_matrix_naive_bayes.png")
-plt.close()
+# Binarize the output for ROC curve calculation
+n_classes = len(rf_encoder.classes_)
+rf_y_test_bin = label_binarize(rf_y_test, classes=list(range(n_classes)))
+nb_y_test_bin = label_binarize(nb_y_test, classes=list(range(n_classes)))
 
-# 4. Side-by-side confusion matrix comparison (normalized)
-fig, axes = plt.subplots(1, 2, figsize=(20, 8))
+# Compute micro-average ROC curve and ROC area
+rf_fpr, rf_tpr, _ = roc_curve(rf_y_test_bin.ravel(), rf_y_pred_proba.ravel())
+rf_roc_auc_micro = auc(rf_fpr, rf_tpr)
 
-# Normalize confusion matrices
-rf_cm_norm = rf_cm.astype('float') / rf_cm.sum(axis=1)[:, np.newaxis]
-nb_cm_norm = nb_cm.astype('float') / nb_cm.sum(axis=1)[:, np.newaxis]
+nb_fpr, nb_tpr, _ = roc_curve(nb_y_test_bin.ravel(), nb_y_pred_proba.ravel())
+nb_roc_auc_micro = auc(nb_fpr, nb_tpr)
 
-sns.heatmap(rf_cm_norm, annot=False, fmt='.2f', cmap='Blues', ax=axes[0],
-            xticklabels=rf_encoder.classes_,
-            yticklabels=rf_encoder.classes_,
-            cbar_kws={'label': 'Proportion'})
-axes[0].set_title('Random Forest (Normalized)', fontsize=14, fontweight='bold')
-axes[0].set_xlabel('Predicted Label', fontsize=11, fontweight='bold')
-axes[0].set_ylabel('True Label', fontsize=11, fontweight='bold')
-axes[0].tick_params(axis='x', rotation=90, labelsize=7)
-axes[0].tick_params(axis='y', rotation=0, labelsize=7)
+# Plot ROC curves
+fig, ax = plt.subplots(figsize=(10, 8))
 
-sns.heatmap(nb_cm_norm, annot=False, fmt='.2f', cmap='Greens', ax=axes[1],
-            xticklabels=nb_encoder.classes_,
-            yticklabels=nb_encoder.classes_,
-            cbar_kws={'label': 'Proportion'})
-axes[1].set_title('Naive Bayes (Normalized)', fontsize=14, fontweight='bold')
-axes[1].set_xlabel('Predicted Label', fontsize=11, fontweight='bold')
-axes[1].set_ylabel('True Label', fontsize=11, fontweight='bold')
-axes[1].tick_params(axis='x', rotation=90, labelsize=7)
-axes[1].tick_params(axis='y', rotation=0, labelsize=7)
+ax.plot(rf_fpr, rf_tpr, color='#2ecc71', lw=2.5, 
+        label=f'Random Forest (AUC = {rf_roc_auc_micro:.4f})')
+ax.plot(nb_fpr, nb_tpr, color='#3498db', lw=2.5, 
+        label=f'Naive Bayes (AUC = {nb_roc_auc_micro:.4f})')
+
+ax.plot([0, 1], [0, 1], 'k--', lw=1.5, alpha=0.3)
+ax.set_xlim([0.0, 1.0])
+ax.set_ylim([0.0, 1.05])
+ax.set_xlabel('False Positive Rate', fontsize=12, fontweight='bold')
+ax.set_ylabel('True Positive Rate', fontsize=12, fontweight='bold')
+ax.set_title('ROC Curve Comparison (Micro-Average)', fontsize=14, fontweight='bold')
+ax.legend(loc="lower right", fontsize=11)
+ax.grid(alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('confusion_matrix_comparison.png', dpi=300, bbox_inches='tight')
-print("✓ Saved: confusion_matrix_comparison.png")
+plt.savefig('roc_curve_comparison.png', dpi=300, bbox_inches='tight')
+print("✓ Saved: roc_curve_comparison.png")
 plt.close()
 
 print("\n" + "=" * 80)
