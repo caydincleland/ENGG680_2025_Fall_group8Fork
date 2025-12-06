@@ -6,6 +6,8 @@ A machine learning-based disease prediction system that uses patient symptoms to
 
 This project implements and compares two machine learning models (Random Forest and Naive Bayes) for disease prediction based on symptom data. The system processes 377 symptoms across 754 disease classes and provides top-K predictions with confidence scores.
 
+This project is inspired by real-world challenges in equitable healthcare access. Many marginalized groups face barriers, bias, and long wait times in receiving medical attention, so our system aims to provide an accessible, unbiased, and symptom-based diagnostic tool. By offering disease predictions with confidence levels and identifying nearby clinics/pharmacies with relevant medications, the system supports both underserved populations and physicians seeking probabilistic second opinions. 
+
 ## Dataset
 
 **Disease and symptoms dataset.csv** (182 MB - not included in repository)
