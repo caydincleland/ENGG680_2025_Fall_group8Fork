@@ -75,4 +75,4 @@ Link to  data set: https://data.mendeley.com/datasets/2cxccsxydc/1
 ### Random Forest
 ```python
 RandomForestClassifier(n_estimators=25, random_state=42)
-# All other parameters at default values
+# All other parameters at default values #
